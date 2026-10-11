@@ -31,13 +31,37 @@ class TelegramService:
 
     @property
     def is_configured(self) -> bool:
-        """Checks if both Telegram bot token and chat target are specified."""
-        return bool(
-            self.bot_token
-            and self.bot_token.strip()
-            and self.default_chat_id
-            and self.default_chat_id.strip()
-        )
+        """Checks if bot token is specified."""
+        return bool(self.bot_token and self.bot_token.strip())
+
+    async def discover_latest_chat(self) -> Optional[Dict[str, Any]]:
+        """Queries getUpdates from Telegram Bot API to detect the latest active chat/channel."""
+        if not self.bot_token:
+            return None
+        url = f"https://api.telegram.org/bot{self.bot_token}/getUpdates"
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.get(url)
+                if res.status_code == 200:
+                    data = res.json()
+                    results = data.get("result", [])
+                    if results:
+                        last = results[-1]
+                        chat = (
+                            last.get("message", {}).get("chat")
+                            or last.get("my_chat_member", {}).get("chat")
+                            or last.get("channel_post", {}).get("chat")
+                        )
+                        if chat:
+                            return {
+                                "chat_id": str(chat.get("id")),
+                                "title": chat.get("title") or chat.get("username") or chat.get("first_name"),
+                                "type": chat.get("type"),
+                            }
+        except Exception as e:
+            logger.warning("Failed to auto-discover Telegram chat: %s", e)
+        return None
+
 
     def format_alert_message(
         self,
@@ -115,7 +139,16 @@ class TelegramService:
         Dispatches an emergency notification to the target Telegram chat or channel.
         Falls back to verified simulated dispatch if unconfigured or offline.
         """
-        chat_id = target_chat_id or self.default_chat_id or "@WildfireEmergencyAlerts"
+        chat_id = target_chat_id or self.default_chat_id
+
+        # If chat_id is not specified, attempt auto-discovery from getUpdates
+        if not chat_id and self.bot_token:
+            discovered = await self.discover_latest_chat()
+            if discovered and discovered.get("chat_id"):
+                chat_id = discovered["chat_id"]
+                self.default_chat_id = chat_id
+
+        chat_id = chat_id or "@WildfireEmergencyAlerts"
         message_text = self.format_alert_message(
             region_name=region_name,
             threat_level=threat_level,
@@ -128,7 +161,7 @@ class TelegramService:
         now_iso = datetime.now(timezone.utc).isoformat()
 
         # If configured, send to real Telegram Bot API
-        if self.is_configured:
+        if self.is_configured and chat_id != "@WildfireEmergencyAlerts":
             api_url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
             payload = {
                 "chat_id": chat_id,
