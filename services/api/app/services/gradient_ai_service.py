@@ -260,17 +260,18 @@ class DigitalOceanGradientAIService:
         and Cellular Automata spread simulation parameters.
         """
         region_name = map_context.get("region_name", "Garhwal Forest Division")
-        active_fires = map_context.get("active_fires_count", 3)
-        mean_risk = float(map_context.get("mean_risk", 0.042))
-        sim_step = map_context.get("current_sim_step", 6)
-        burned_area_ha = map_context.get("burned_area_ha", 145.2)
+        active_fires = int(map_context.get("active_hotspots") or map_context.get("active_fires_count") or 0)
+        burned_area_ha = float(map_context.get("burned_area_ha", active_fires * 25.0 if active_fires > 0 else 0.0))
+        mean_risk = float(map_context.get("mean_probability") or map_context.get("mean_risk", 0.042))
+        sim_step = map_context.get("current_sim_step", 0 if active_fires == 0 else 6)
         wind_dir = map_context.get("wind_direction_deg", 215)
-        wind_speed = map_context.get("wind_speed_kmh", 30)
+        wind_speed = map_context.get("wind_speed_kmh", 28.0)
 
         system_prompt = (
             "You are the DigitalOcean Gradient AI Wildfire Copilot. You are an expert in Geospatial GIS, "
             "XGBoost spatial risk prediction, and Cellular Automata fire spread simulation. "
-            "Answer the operator's question directly, accurately, and authoritatively using the provided map context."
+            "Answer the operator's question directly, accurately, and authoritatively using the provided map context. "
+            "CRITICAL CONSTRAINT: If active hotspots are 0 or burned area is 0, state clearly that no active burned region exists."
         )
 
         user_prompt = (
@@ -282,7 +283,7 @@ class DigitalOceanGradientAIService:
             f"- Estimated Burned Area: {burned_area_ha:.1f} hectares\n"
             f"- Active Wind Vector: {wind_speed} km/h blowing toward azimuth {wind_dir}°\n\n"
             f"Operator Question: {question}\n\n"
-            f"Provide a clear, concise, actionable operational answer."
+            f"Provide a clear, concise, actionable operational answer. If active fires are 0 or burned area is 0, explicitly clarify that there is no active burned area."
         )
 
         try:
@@ -312,10 +313,10 @@ class DigitalOceanGradientAIService:
         """
         q = question.lower()
         region_name = map_context.get("region_name") or "Garhwal Forest Division"
-        active_fires = map_context.get("active_hotspots") or map_context.get("active_fires_count", 3)
+        active_fires = int(map_context.get("active_hotspots") or map_context.get("active_fires_count") or 0)
+        burned_area_ha = float(map_context.get("burned_area_ha", active_fires * 25.0 if active_fires > 0 else 0.0))
         mean_risk = float(map_context.get("mean_probability") or map_context.get("mean_risk", 0.042))
-        sim_step = map_context.get("current_sim_step", 6)
-        burned_area_ha = float(map_context.get("burned_area_ha", 145.2))
+        sim_step = map_context.get("current_sim_step", 0 if active_fires == 0 else 6)
         wind_dir = map_context.get("wind_direction_deg", 215)
         wind_speed = map_context.get("wind_speed_kmh", 28.0)
         temp_c = map_context.get("temperature_c", 34.5)
@@ -324,6 +325,13 @@ class DigitalOceanGradientAIService:
 
         # 1. Burned Area / Extent / Size / Hectares
         if any(w in q for w in ["burn", "area", "hectare", "size", "extent", "ha", "perimeter", "acre"]):
+            if burned_area_ha <= 0.0 or active_fires == 0:
+                return (
+                    f"NO ACTIVE BURNED REGION DETECTED FOR {region_name.upper()}:\n\n"
+                    f"• Active Burned Area: 0.0 hectares (0 km²).\n"
+                    f"• Satellite Detections: 0 active thermal anomalies detected across this forest division by MODIS / VIIRS sensors.\n"
+                    f"• Operational Status: No active flame front or burned perimeter currently exists in this sector. Any risk values displayed on the map reflect 24-hour predictive susceptibility based on weather and dry fuel conditions."
+                )
             hourly_growth = burned_area_ha / max(1, sim_step)
             return (
                 f"BURNED AREA ANALYSIS FOR {region_name.upper()}:\n\n"

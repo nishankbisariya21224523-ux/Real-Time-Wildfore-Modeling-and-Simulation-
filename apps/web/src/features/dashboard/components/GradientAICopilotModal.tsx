@@ -123,6 +123,7 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
           fire_danger_index: fireDangerIndex,
           mean_probability: meanRisk,
           active_hotspots: activeHotspots,
+          burned_area_ha: activeHotspots > 0 ? activeHotspots * 25.0 : 0.0,
           temperature_c: temperatureC,
           relative_humidity: relativeHumidity,
           wind_speed_kmh: windSpeedKmh,
