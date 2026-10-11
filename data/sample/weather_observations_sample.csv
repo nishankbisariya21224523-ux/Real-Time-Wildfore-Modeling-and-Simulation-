@@ -1,0 +1,7 @@
+station_id,latitude,longitude,observation_date,temperature_c,relative_humidity_pct,wind_speed_ms,wind_direction_deg,precipitation_mm
+IMD_PAURI,30.1500,78.7800,2026-05-14,32.5,24.0,4.8,210.0,0.0
+IMD_SRINAGAR,30.2200,78.7800,2026-05-14,35.0,20.0,5.5,225.0,0.0
+IMD_KOTDWAR,29.7500,78.5200,2026-05-14,37.8,22.0,4.2,190.0,0.0
+IMD_PAURI,30.1500,78.7800,2026-05-15,33.2,21.0,6.0,215.0,0.0
+IMD_SRINAGAR,30.2200,78.7800,2026-05-15,36.4,18.0,6.8,230.0,0.0
+IMD_KOTDWAR,29.7500,78.5200,2026-05-15,38.5,19.0,5.1,195.0,0.0

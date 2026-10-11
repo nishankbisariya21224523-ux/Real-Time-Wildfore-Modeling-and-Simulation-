@@ -1,0 +1,61 @@
+# Environments and Python
+.venv/
+env/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Node & Frontend
+node_modules/
+.npm/
+apps/web/dist/
+apps/web/node_modules/
+*.tsbuildinfo
+.vite/
+
+# Database & Data
+*.sqlite3
+*.db
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+# Keep sample data and models tracked for local testing, CI/CD, and reproducible pipelines
+models/risk/*
+!models/risk/.gitkeep
+!models/risk/risk-xgboost-v001
+!models/risk/risk-xgboost-v001/**
+!models/risk/risk-xgboost-v002
+!models/risk/risk-xgboost-v002/**
+models/spread/*
+!models/spread/.gitkeep
+postgres-data/
+redis-data/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

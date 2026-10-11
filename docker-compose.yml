@@ -1,0 +1,126 @@
+services:
+  # 1. PostgreSQL with PostGIS Extension
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: forest_fire_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-forest_fire_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema/initial_schema.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+      - ./database/seed/sample_seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+    networks:
+      - forest_fire_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-forest_fire_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis In-Memory Task Broker & Cache
+  redis:
+    image: redis:7-alpine
+    container_name: forest_fire_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - forest_fire_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 3. FastAPI Backend Service
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    container_name: forest_fire_api
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      DEBUG: ${DEBUG:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-forest_fire_db}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ./services/api:/app/services/api
+      - ./packages:/app/packages
+      - ./models:/app/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - forest_fire_network
+
+  # 4. Celery Worker (Background Simulation Processor)
+  celery_worker:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    container_name: forest_fire_celery_worker
+    restart: unless-stopped
+    command: ["celery", "-A", "services.api.app.core.celery_app.celery_app", "worker", "--loglevel=INFO", "--concurrency=2"]
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-forest_fire_db}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    volumes:
+      - ./services/api:/app/services/api
+      - ./services/spread-engine:/app/services/spread-engine
+      - ./services/risk-engine:/app/services/risk-engine
+      - ./packages:/app/packages
+      - ./models:/app/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - forest_fire_network
+
+  # 5. React Web Frontend (Vite)
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: forest_fire_web
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000/api/v1}
+      VITE_MAPBOX_ACCESS_TOKEN: ${VITE_MAPBOX_ACCESS_TOKEN:-}
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    networks:
+      - forest_fire_network
+
+networks:
+  forest_fire_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
