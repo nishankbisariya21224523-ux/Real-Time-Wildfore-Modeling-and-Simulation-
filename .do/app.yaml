@@ -1,0 +1,46 @@
+name: real-time-wildfire-modeling
+region: nyc
+services:
+  - name: api
+    github:
+      branch: main
+      deploy_on_push: true
+    source_dir: services/api
+    build_command: pip install -r requirements.txt
+    run_command: uvicorn app.main:app --host 0.0.0.0 --port 8080
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api
+    envs:
+      - key: DO_GENAI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: DO_GENAI_MODEL
+        value: meta-llama/llama-3.3-70b-instruct
+      - key: DO_GENAI_BASE_URL
+        value: https://api.digitalocean.com/v1/genai
+      - key: ENVIRONMENT
+        value: production
+
+static_sites:
+  - name: web
+    github:
+      branch: main
+      deploy_on_push: true
+    source_dir: apps/web
+    build_command: npm install && npm run build
+    output_dir: dist
+    routes:
+      - path: /
+    envs:
+      - key: VITE_API_URL
+        value: ${api.PUBLIC_URL}
+
+databases:
+  - name: db-wildfire
+    engine: PG
+    version: "15"
+    size_slug: db-s-dev-database
+    production: false

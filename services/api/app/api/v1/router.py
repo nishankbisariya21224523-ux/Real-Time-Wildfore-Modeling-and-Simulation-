@@ -7,6 +7,7 @@ from .fires import router as fires_router
 from .risk import router as risk_router
 from .simulations import router as simulations_router
 from .layers import router as layers_router
+from .ai import router as ai_router
 
 api_v1_router = APIRouter()
 
@@ -17,3 +18,5 @@ api_v1_router.include_router(fires_router)
 api_v1_router.include_router(risk_router)
 api_v1_router.include_router(simulations_router)
 api_v1_router.include_router(layers_router)
+api_v1_router.include_router(ai_router)
+

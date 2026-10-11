@@ -1,6 +1,8 @@
 import React from 'react';
 import { MetricGrid } from '../features/dashboard/components/MetricGrid';
 import { OperationalAttentionBanner } from '../features/dashboard/components/OperationalAttentionBanner';
+import { AIIncidentBriefingModal } from '../features/dashboard/components/AIIncidentBriefingModal';
+
 import { MapContainer } from '../features/map/components/MapContainer';
 import { RegionLayer } from '../features/map/components/RegionLayer';
 import { FireLayer } from '../features/map/components/FireLayer';
@@ -112,6 +114,11 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               >
                 SIMULATE
               </button>
+              <AIIncidentBriefingModal
+                regionName={selectedRegion?.name || 'Garhwal'}
+                fireDangerIndex={meanRisk * 100}
+                activeHotspots={activeFireCount}
+              />
             </div>
           </div>
 

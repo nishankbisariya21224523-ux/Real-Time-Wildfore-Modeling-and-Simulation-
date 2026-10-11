@@ -10,6 +10,7 @@ from ..services.fire_service import FireService
 from ..services.risk_service import RiskService
 from ..services.simulation_service import SimulationService
 from ..services.layer_service import LayerService
+from ..services.do_ai_service import DigitalOceanAIService, do_ai_service
 
 
 def get_region_service(db: Optional[Session] = Depends(get_db)) -> RegionService:
@@ -30,3 +31,8 @@ def get_simulation_service(db: Optional[Session] = Depends(get_db)) -> Simulatio
 
 def get_layer_service() -> LayerService:
     return LayerService()
+
+
+def get_do_ai_service() -> DigitalOceanAIService:
+    return do_ai_service
+

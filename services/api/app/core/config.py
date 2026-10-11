@@ -42,6 +42,11 @@ class Settings(BaseSettings):
     DEFAULT_RISK_MODEL_VERSION: str = "risk-xgboost-v002"
     PROCESSED_DATA_DIR: str = "data/processed"
 
+    # DigitalOcean GenAI
+    DO_GENAI_API_KEY: str = ""
+    DO_GENAI_BASE_URL: str = "https://api.digitalocean.com/v1/genai"
+    DO_GENAI_MODEL: str = "meta-llama/llama-3.3-70b-instruct"
+
     @property
     def cors_origin_list(self) -> List[str]:
         """Parse comma-separated CORS origins into a list."""
