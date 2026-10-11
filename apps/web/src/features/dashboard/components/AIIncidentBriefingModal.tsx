@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { generateAIAdvisory, IncidentBriefingResult } from '../../../services/api/ai';
+import { broadcastTelegramAlert, TelegramAlertResult } from '../../../services/api/alerts';
 
 export interface AIIncidentBriefingModalProps {
   regionName: string;
@@ -25,6 +26,11 @@ export const AIIncidentBriefingModal: React.FC<AIIncidentBriefingModalProps> = (
   const [advisory, setAdvisory] = useState<IncidentBriefingResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [telegramSending, setTelegramSending] = useState(false);
+  const [telegramResult, setTelegramResult] = useState<TelegramAlertResult | null>(null);
+  const [telegramError, setTelegramError] = useState<string | null>(null);
+
+
   const handleOpenAndFetch = async () => {
     setIsOpen(true);
     setLoading(true);
@@ -48,6 +54,28 @@ export const AIIncidentBriefingModal: React.FC<AIIncidentBriefingModalProps> = (
       setError(msg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBroadcastTelegram = async () => {
+    if (!advisory) return;
+    setTelegramSending(true);
+    setTelegramError(null);
+    try {
+      const res = await broadcastTelegramAlert({
+        region_name: regionName,
+        threat_level: advisory.threat_level,
+        fire_danger_index: advisory.fire_danger_index,
+        evacuation_status: advisory.evacuation_directive,
+        safety_instructions: advisory.tactical_actions,
+        custom_note: `Civil emergency alert for ${regionName}. Follow directives from Incident Command.`,
+      });
+      setTelegramResult(res);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to broadcast Telegram alert';
+      setTelegramError(msg);
+    } finally {
+      setTelegramSending(false);
     }
   };
 
@@ -143,6 +171,49 @@ export const AIIncidentBriefingModal: React.FC<AIIncidentBriefingModalProps> = (
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Telegram Civil Alert Broadcasting Panel */}
+                  <div className="bg-ops-surface p-3 rounded border border-sky-500/30 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-base text-sky-400">✈️</span>
+                        <div>
+                          <div className="text-[11px] font-bold text-txt-primary uppercase">
+                            Telegram Resident Civil Alert
+                          </div>
+                          <div className="text-[10px] text-txt-muted">
+                            Broadcast real-time evacuation notice to local residents
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleBroadcastTelegram}
+                        disabled={telegramSending}
+                        className="px-3 py-1 rounded-[2px] bg-sky-600 hover:bg-sky-500 text-white font-mono text-[11px] font-semibold flex items-center space-x-1.5 transition-colors disabled:opacity-50"
+                      >
+                        <span>📢</span>
+                        <span>{telegramSending ? 'Broadcasting...' : 'Broadcast to Telegram'}</span>
+                      </button>
+                    </div>
+
+                    {telegramError && (
+                      <div className="p-2 bg-danger/10 border border-danger/30 rounded text-danger text-[11px]">
+                        {telegramError}
+                      </div>
+                    )}
+
+                    {telegramResult && (
+                      <div className="p-2.5 bg-sky-950/40 border border-sky-500/40 rounded text-sky-300 text-xs space-y-1.5">
+                        <div className="font-bold flex items-center gap-1.5 text-[11px]">
+                          <span>✅</span>
+                          <span>Dispatched to {telegramResult.channel} ({telegramResult.provider})</span>
+                        </div>
+                        <pre className="p-2 bg-black/60 rounded text-[10px] text-slate-300 font-mono whitespace-pre-wrap max-h-32 overflow-y-auto border border-ops-border/60">
+                          {telegramResult.formatted_message}
+                        </pre>
+                      </div>
+                    )}
                   </div>
 
                   {/* Metadata Footer */}

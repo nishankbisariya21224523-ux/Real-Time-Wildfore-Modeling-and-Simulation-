@@ -47,6 +47,11 @@ class Settings(BaseSettings):
     DO_GENAI_BASE_URL: str = "https://api.digitalocean.com/v1/genai"
     DO_GENAI_MODEL: str = "meta-llama/llama-3.3-70b-instruct"
 
+    # Telegram Emergency Alert Broadcast
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_CHAT_ID: str = ""
+
+
     @property
     def cors_origin_list(self) -> List[str]:
         """Parse comma-separated CORS origins into a list."""

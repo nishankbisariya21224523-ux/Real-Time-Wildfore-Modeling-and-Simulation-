@@ -11,6 +11,7 @@ from ..services.risk_service import RiskService
 from ..services.simulation_service import SimulationService
 from ..services.layer_service import LayerService
 from ..services.do_ai_service import DigitalOceanAIService, do_ai_service
+from ..services.telegram_service import TelegramService, telegram_service
 
 
 def get_region_service(db: Optional[Session] = Depends(get_db)) -> RegionService:
@@ -35,4 +36,9 @@ def get_layer_service() -> LayerService:
 
 def get_do_ai_service() -> DigitalOceanAIService:
     return do_ai_service
+
+
+def get_telegram_service() -> TelegramService:
+    return telegram_service
+
 
