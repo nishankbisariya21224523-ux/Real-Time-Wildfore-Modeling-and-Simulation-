@@ -86,7 +86,6 @@ export const AIIncidentBriefingModal: React.FC<AIIncidentBriefingModalProps> = (
         title="Generate AI-driven Incident Commander SITREP via DigitalOcean GenAI"
         className="px-2.5 py-1 rounded-[2px] bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 transition-colors font-mono text-[11px] font-semibold flex items-center space-x-1"
       >
-        <span>⚡</span>
         <span>DO AI SITREP</span>
       </button>
 
@@ -96,7 +95,6 @@ export const AIIncidentBriefingModal: React.FC<AIIncidentBriefingModalProps> = (
             {/* Header */}
             <div className="flex justify-between items-center border-b border-ops-border pb-3 shrink-0">
               <div className="flex items-center space-x-2">
-                <span className="text-base text-blue-400">🌊</span>
                 <div>
                   <h3 className="text-sm font-bold text-txt-primary uppercase tracking-wide">
                     DigitalOcean AI · Wildfire SITREP
@@ -177,7 +175,6 @@ export const AIIncidentBriefingModal: React.FC<AIIncidentBriefingModalProps> = (
                   <div className="bg-ops-surface p-3 rounded border border-sky-500/30 space-y-2">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-2">
-                        <span className="text-base text-sky-400">✈️</span>
                         <div>
                           <div className="text-[11px] font-bold text-txt-primary uppercase">
                             Telegram Resident Civil Alert
@@ -192,7 +189,6 @@ export const AIIncidentBriefingModal: React.FC<AIIncidentBriefingModalProps> = (
                         disabled={telegramSending}
                         className="px-3 py-1 rounded-[2px] bg-sky-600 hover:bg-sky-500 text-white font-mono text-[11px] font-semibold flex items-center space-x-1.5 transition-colors disabled:opacity-50"
                       >
-                        <span>📢</span>
                         <span>{telegramSending ? 'Broadcasting...' : 'Broadcast to Telegram'}</span>
                       </button>
                     </div>
@@ -206,7 +202,7 @@ export const AIIncidentBriefingModal: React.FC<AIIncidentBriefingModalProps> = (
                     {telegramResult && (
                       <div className="p-2.5 bg-sky-950/40 border border-sky-500/40 rounded text-sky-300 text-xs space-y-1.5">
                         <div className="font-bold flex items-center gap-1.5 text-[11px]">
-                          <span>✅</span>
+                          <span>[SENT]</span>
                           <span>Dispatched to {telegramResult.channel} ({telegramResult.provider})</span>
                         </div>
                         <pre className="p-2 bg-black/60 rounded text-[10px] text-slate-300 font-mono whitespace-pre-wrap max-h-32 overflow-y-auto border border-ops-border/60">

@@ -201,7 +201,6 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
         title="DigitalOcean Gradient AI Copilot: Feature Attribution, GIS Spread Q&A, Preparedness Doctrine & Situation Briefs"
         className="px-2.5 py-1 rounded-[2px] bg-indigo-600/25 hover:bg-indigo-600/35 text-indigo-300 border border-indigo-500/40 transition-colors font-mono text-[11px] font-semibold flex items-center space-x-1"
       >
-        <span>🧠</span>
         <span>Gradient AI</span>
       </button>
 
@@ -211,7 +210,6 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
             {/* Modal Header */}
             <div className="flex justify-between items-center border-b border-ops-border pb-3 shrink-0">
               <div className="flex items-center space-x-2.5">
-                <span className="text-xl text-indigo-400">🌊🧠</span>
                 <div>
                   <div className="flex items-center space-x-2">
                     <h3 className="text-sm font-bold text-txt-primary uppercase tracking-wide">
@@ -247,7 +245,6 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                     : 'border-transparent text-txt-muted hover:text-txt-primary'
                 }`}
               >
-                <span>📊</span>
                 <span>Explain Elevated Risk</span>
               </button>
 
@@ -259,7 +256,6 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                     : 'border-transparent text-txt-muted hover:text-txt-primary'
                 }`}
               >
-                <span>💬</span>
                 <span>Map & Spread Copilot</span>
               </button>
 
@@ -276,7 +272,6 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                     : 'border-transparent text-txt-muted hover:text-txt-primary'
                 }`}
               >
-                <span>📜</span>
                 <span>Preparedness Guidance</span>
               </button>
 
@@ -291,7 +286,6 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                     : 'border-transparent text-txt-muted hover:text-txt-primary'
                 }`}
               >
-                <span>📑</span>
                 <span>Regional Situation Brief</span>
               </button>
             </div>
@@ -345,7 +339,6 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                     {/* Natural Language Explanation */}
                     <div className="bg-ops-bg p-3 rounded border border-indigo-500/30 text-xs text-txt-primary leading-relaxed whitespace-pre-line">
                       <div className="flex items-center space-x-1.5 text-indigo-400 font-bold mb-1.5 uppercase text-[11px]">
-                        <span>⚡</span>
                         <span>Model Prediction Rationale ({explainResult.model_version})</span>
                       </div>
                       {explainResult.explanation}
@@ -393,7 +386,7 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                                         : 'text-forest'
                                     }`}
                                   >
-                                    {f.contribution_direction === 'ELEVATING' ? '▲ ELEVATING' : '▼ MITIGATING'}
+                                    {f.contribution_direction === 'ELEVATING' ? 'ELEVATING' : 'MITIGATING'}
                                   </span>
                                 </td>
                                 <td className="p-2 text-[11px] text-txt-muted">{f.physical_rationale}</td>
@@ -466,7 +459,7 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                       }`}
                     >
                       <div className="flex items-center space-x-1.5 text-[10px] text-txt-muted mb-0.5">
-                        <span>{m.sender === 'user' ? '👤 Incident Operator' : '🧠 Gradient AI'}</span>
+                        <span>{m.sender === 'user' ? 'Incident Operator' : 'Gradient AI'}</span>
                         <span>· {m.timestamp}</span>
                       </div>
                       <div
@@ -577,7 +570,7 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                         onClick={() => handleRetrieveGuidance(item.q)}
                         className="text-[11px] bg-ops-surface hover:bg-ops-hover border border-ops-border text-txt-secondary hover:text-txt-primary px-2.5 py-1 rounded transition-colors"
                       >
-                        📖 {item.label}
+                        {item.label}
                       </button>
                     ))}
                   </div>
@@ -612,7 +605,6 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                       >
                         <div className="flex items-center justify-between border-b border-ops-border/60 pb-1.5">
                           <div className="flex items-center space-x-2">
-                            <span className="text-base text-indigo-400">📜</span>
                             <span className="font-bold text-xs text-txt-primary">{doc.title}</span>
                           </div>
                           <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-900/50 text-indigo-300 border border-indigo-500/40 font-bold">
@@ -624,7 +616,7 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                         </div>
                         <div className="text-[10px] text-txt-muted flex justify-between">
                           <span>Doc ID: {doc.document_id}</span>
-                          <span className="text-forest font-semibold">✓ Verified Doctrine</span>
+                          <span className="text-forest font-semibold">[VERIFIED DOCTRINE]</span>
                         </div>
                       </div>
                     ))}
@@ -663,7 +655,6 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                         onClick={handleCopyBrief}
                         className="px-3 py-1 rounded bg-ops-surface hover:bg-ops-hover text-txt-primary border border-ops-border font-mono text-[11px] font-semibold transition-colors flex items-center space-x-1"
                       >
-                        <span>📋</span>
                         <span>{copied ? 'Copied!' : 'Copy'}</span>
                       </button>
                     )}
@@ -708,7 +699,7 @@ export const GradientAICopilotModal: React.FC<GradientAICopilotModalProps> = ({
                             key={idx}
                             className="bg-ops-surface p-2 rounded border border-ops-border/60 text-xs text-txt-secondary flex items-start space-x-2"
                           >
-                            <span className="text-forest font-bold shrink-0">✔</span>
+                            <span className="text-forest font-bold shrink-0">•</span>
                             <span>{cite}</span>
                           </div>
                         ))}
