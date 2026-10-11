@@ -11,6 +11,7 @@ from ..services.risk_service import RiskService
 from ..services.simulation_service import SimulationService
 from ..services.layer_service import LayerService
 from ..services.do_ai_service import DigitalOceanAIService, do_ai_service
+from ..services.gradient_ai_service import DigitalOceanGradientAIService, gradient_ai_service
 from ..services.telegram_service import TelegramService, telegram_service
 
 
@@ -38,7 +39,12 @@ def get_do_ai_service() -> DigitalOceanAIService:
     return do_ai_service
 
 
+def get_gradient_ai_service() -> DigitalOceanGradientAIService:
+    return gradient_ai_service
+
+
 def get_telegram_service() -> TelegramService:
     return telegram_service
+
 
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { MetricGrid } from '../features/dashboard/components/MetricGrid';
 import { OperationalAttentionBanner } from '../features/dashboard/components/OperationalAttentionBanner';
 import { AIIncidentBriefingModal } from '../features/dashboard/components/AIIncidentBriefingModal';
+import { GradientAICopilotModal } from '../features/dashboard/components/GradientAICopilotModal';
 
 import { MapContainer } from '../features/map/components/MapContainer';
 import { RegionLayer } from '../features/map/components/RegionLayer';
@@ -117,6 +118,12 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               <AIIncidentBriefingModal
                 regionName={selectedRegion?.name || 'Garhwal'}
                 fireDangerIndex={meanRisk * 100}
+                activeHotspots={activeFireCount}
+              />
+              <GradientAICopilotModal
+                regionName={selectedRegion?.name || 'Garhwal'}
+                fireDangerIndex={meanRisk * 100}
+                meanRisk={meanRisk}
                 activeHotspots={activeFireCount}
               />
             </div>

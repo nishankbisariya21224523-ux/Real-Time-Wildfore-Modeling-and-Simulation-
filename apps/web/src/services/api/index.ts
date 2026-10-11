@@ -11,5 +11,6 @@ export * from './layers';
 export * from './health';
 export * from './ai';
 export * from './alerts';
+export * from './gradientAi';
 
 
