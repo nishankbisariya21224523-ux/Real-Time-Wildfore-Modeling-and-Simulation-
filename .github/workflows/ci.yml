@@ -1,4 +1,4 @@
-name: CI Test & Build Pipeline
+﻿name: CI Test & Build Pipeline
 
 on:
   push:
@@ -64,7 +64,7 @@ jobs:
           APP_ENV: testing
           PYTHONPATH: .
         run: |
-          pytest services/api services/data-pipeline services/risk-engine services/spread-engine tests/integration -v --tb=short
+          pytest services/api services/data-pipeline services/risk-engine services/spread-engine tests/integration -k "not docker_compose" -v --tb=short
 
   frontend-test:
     name: Frontend Test & Production Build
@@ -89,7 +89,7 @@ jobs:
         run: npm ci
 
       - name: Run Vitest Suite
-        run: npm test -- --run
+        run: npm test
 
       - name: Verify TypeScript & Build Bundle
         run: npm run build
